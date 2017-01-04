@@ -1,0 +1,46 @@
+@CHARSET "UTF-8";
+
+#input_path, .pathSuggestBox, .pathSuggestItem {
+	width: 20em;
+}
+
+#input_path {
+	display: block;
+}
+
+label[for="input_path"] {
+	padding-left: 0;
+}
+
+.pathSuggestBox {
+	position: relative;
+	padding-left: 0;
+	padding-top: 0;
+}
+
+.pathSuggest {
+	display: none;
+	padding: 0px;
+	position: absolute;
+	top: 0;
+	left: 0;
+	position: absolute;
+}
+
+.pathSuggest ul {
+	list-style: none;
+	margin: 0;
+	padding: 0;
+}
+
+.pathSuggestItem {
+	display: block;
+	background-color: buttonface;
+	border: 1px solid black;
+	padding: 1ex;
+	cursor: pointer;
+}
+
+.pathSuggestItem:hover {
+	background-color: activecaption;
+}

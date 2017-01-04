@@ -1,0 +1,11 @@
+# disable directory browsing
+Options All -Indexes
+
+# prevent folder listing
+IndexIgnore *
+
+# prevent viewing of a specific file
+<FilesMatch "\.(htaccess|sql|ini|log|db|sh|csv)$">
+ Order Allow,Deny
+ Deny from all
+</FilesMatch>

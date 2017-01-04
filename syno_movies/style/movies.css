@@ -1,0 +1,75 @@
+@CHARSET "UTF-8";
+
+body, div, input, select, label {
+	padding: 1ex;
+	font-family: fantasy;
+}
+
+input, label, div, select {
+	font-size: 1em;
+}
+
+.block {
+	width: 30em;
+	margin-bottom: 0.5em;
+}
+
+.block_header {
+	font-size: 1.1em;
+	font-weight: bold;
+	width: 10em;
+	border-bottom: 1px solid black;
+	background-color: threedlightshadow;
+}
+
+input.toolSwitch {
+	display: none;
+}
+
+label.toolSwitch {
+	display: inline-block;
+	border: 1px solid black;
+	padding: 0.4em 0.7em 0.4em 0.7em;
+	width: 7em;
+	font-size: 1.1em;
+	text-align: center;
+	font-weight: bold;
+	cursor: pointer;
+}
+
+.toolSwitch:checked+label {
+	background-color: buttonshadow;
+}
+
+label.toolSwitch:hover {
+	background-color: activecaption;
+}
+
+input[type=checkbox]+label {
+	cursor: pointer;
+}
+
+input[type=checkbox]+label:hover {
+	color: DeepSkyBlue;
+}
+
+#btnSubmit, #btnReset {
+	width: 6em;
+	margin-left: 0.7em;
+}
+
+.result div {
+	font-size: 1em;
+}
+
+.error {
+	color: red;
+}
+
+.result_message_ok {
+	color: green;
+}
+
+.result_message_error {
+	color: red;
+}
