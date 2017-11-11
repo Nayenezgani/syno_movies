@@ -60,7 +60,7 @@ EOT;
 		// Set not existing watch status
 		foreach ( $aWatched as $aFile ) {
 			$dbRow = null;
-			$sFileName = str_replace ( cKODIsrcPath, '', $aFile ['fileName'] );
+			$sFileName = str_replace ( cKODIsrcPath, cSYNOvolume, $aFile ['fileName'] );
 			$sqlFileName = $dbConn->quote ( $sFileName );
 			$dWatched = $aFile ['lastPlayed'];
 

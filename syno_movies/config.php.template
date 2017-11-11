@@ -6,7 +6,7 @@ define ( 'cDbConnSYNOuser', 'postgres' );                                  // Sy
 define ( 'cDbConnSYNOpwd', '' );                                           // Synology DB Password
 define ( 'cSYNOcollectionMask', '/.*collection.*/' );                      // Synology - path mask where movie collections are stored
 define ( 'cSYNOuserID', 1026 );                                            // Synology User ID - need for watch status
-define ( 'cDbConnKODIstr', 'mysql:host=127.0.0.1;dbname=kodi_video99' );   // KODI video DB connection string
+define ( 'cDbConnKODIstr', 'mysql:host=127.0.0.1;dbname=kodi_video107' );  // KODI video DB connection string
 define ( 'cDbConnKODIuser', 'kodi' );                                      // KODI DB User
 define ( 'cDbConnKODIpwd', '' );                                           // KODI DB Password
 define ( 'cKODIsrcPath', 'nfs://ds.nayenezgani.cz' );                      // KODI root path to synology
