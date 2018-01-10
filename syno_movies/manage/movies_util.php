@@ -72,7 +72,7 @@ function upload_episodes_title($iTVShowID, $sInputFileName, $bLock = false, $bTe
 		}
 		if (! $dbRow) {
 			resultAddError ( $aResult, "{$iTVShowID} - Seriál nenalezen!" );
-			continue;
+			return false;
 		}
 		$iShowMapperID = $dbRow ['mapper_id'];
 

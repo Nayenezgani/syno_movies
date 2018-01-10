@@ -5,6 +5,7 @@ include_once ('util.php');
 include_once ('nfo_util.php');
 include_once ('kodi_util.php');
 
+$bBatch = false;
 $bWatched = false;
 $bReplace = false;
 $bNotify = false;

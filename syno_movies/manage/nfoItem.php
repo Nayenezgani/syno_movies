@@ -113,6 +113,7 @@ class nfoItem {
 	// getShowPosterName
 	public static function getCollectionName($sFilePath) {
 		$path_parts = pathinfo ( $sFilePath );
+		$path_parts = pathinfo ( $path_parts ['dirname'] );
 		return strtr ( basename ( $path_parts ['dirname'] ), '_', ' ' );
 	}
 	// getCollectionName
@@ -439,7 +440,7 @@ EOT;
 
 		if ($this->bTestMode) {
 			$this->sFilePath = str_replace ( cSYNOvolume, cSYNOvolumeTest . DIRECTORY_SEPARATOR, $this->sFilePath );
-			$this->sFilePath = str_replace ( '/', '\\', $this->sFilePath );
+			$this->sFilePath = str_replace ( '/', DIRECTORY_SEPARATOR, $this->sFilePath );
 		}
 
 		// NFO Path
