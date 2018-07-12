@@ -1,5 +1,39 @@
 <?php
 
+class KodiJSON implements JsonSerializable {
+	public $jsonrpc = "2.0";
+	public $method = null;
+	public $params;
+	public $id = "1";
+
+	public function KodiJSON(string $method, string $id = null) {
+
+		$this->method = $method;
+		if($id) {
+			$this->id = $id;
+		}
+
+	}
+
+	public function __toString(): string {
+
+		return json_encode ( $this );
+
+	}
+
+	public function jsonSerialize(): array {
+
+		$vars = array_filter ( get_object_vars ( $this ), function ($item) {
+			// Keep only not-NULL values
+			return ! is_null ( $item );
+		} );
+
+			return $vars;
+
+	}
+
+}
+
 function sync_watched($dWatchedDateFrom = null) {
 
 	$dbConn = null;
@@ -130,22 +164,21 @@ function notifyKodiSCAN($aPath) {
 
 	$sResult = '';
 	$url = cKODIurl . "/jsonrpc?request";
-	$param = '';
+
+	$oKodiJSON = new KodiJSON ( "VideoLibrary.Scan", "kodi_util_scan" );
 
 	if (count ( $aPath ) == 1) {
-		foreach ( $aPath as $sPath ) {
-			$urlPath = urlencode ( cKODIsrcPath . $sPath . '/' );
-			$param = '{ "jsonrpc": "2.0", "method": "VideoLibrary.Scan", "params": { "directory": "' . $urlPath . '"}, "id": "kodi_util_update" }';
-		}
-	} else {
-		$param = '{ "jsonrpc": "2.0", "method": "VideoLibrary.Scan", "id": "kodi_util_update" }';
+		$oKodiJSON->params = [
+				"directory" => cKODIsrcPath . $aPath[0] . '/'
+		];
 	}
 
+	$sKodiJSON = (string)$oKodiJSON;
 	$opts = array (
 			'http' => array (
 					'method' => 'POST',
-					'header' => 'content-type: application/json',
-					'content' => $param
+					'header' => 'Content-type: application/json\r\n' . "Content-Length: " . strlen($sKodiJSON) . "\r\n",
+					'content' => $sKodiJSON
 			)
 	);
 	$context = stream_context_create ( $opts );
@@ -177,13 +210,14 @@ function notifyKodiCLEAN() {
 
 	$sResult = '';
 	$url = cKODIurl . "/jsonrpc";
-	$param = '{ "jsonrpc": "2.0", "method": "VideoLibrary.Clean", "id": "kodi_util_clean" }';
 
+	$oKodiJSON = new KodiJSON ( "VideoLibrary.Clean", "kodi_util_clean" );
+	$sKodiJSON = (string)$oKodiJSON;
 	$opts = array (
 			'http' => array (
 					'method' => 'POST',
-					'header' => 'content-type: application/json',
-					'content' => $param
+					'header' => 'Content-type: application/json\r\n' . "Content-Length: " . strlen($sKodiJSON) . "\r\n",
+					'content' => $sKodiJSON
 			)
 	);
 	$context = stream_context_create ( $opts );
