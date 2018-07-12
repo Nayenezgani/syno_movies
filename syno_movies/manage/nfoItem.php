@@ -1,10 +1,13 @@
 <?php
+
 abstract class nfoItemType {
 	const Unknown = 0;
 	const Movie = 1;
 	const Episode = 2;
 	const Show = 3;
+
 }
+
 // nfoItemType
 class nfoItem {
 	public $bTestMode = false;
@@ -52,7 +55,9 @@ class nfoItem {
 	protected $sNfoFilePath = null;
 	protected $iSynoPosterOID = null;
 	private $sXMLstring = null;
+
 	function __construct($iMapperID, & $dbConnection = null, $sConnStr = null, $sConnUser = null, $sConnPwd = null) {
+
 		if (! $iMapperID) {
 			throw new Exception ( 'Parameters required!' );
 		}
@@ -69,94 +74,145 @@ class nfoItem {
 			$this->dbConnect ();
 		}
 		return;
+
 	}
+
 	// __construct
 	function __destruct() {
+
+
 	}
+
 	// __destruct
 	public static function checkNFOexist($sFilePath) {
+
 		$sNFOpath = nfoItem::getNFOname ( $sFilePath );
 		return file_exists ( $sNFOpath );
+
 	}
+
 	// checkNFOexist
 	public static function getNFOname($sFilePath) {
+
 		$path_parts = pathinfo ( $sFilePath );
-		return $path_parts ['dirname'] . DIRECTORY_SEPARATOR . $path_parts ['filename'] . '.' . nfoItem::cNFOext;
+		return $path_parts['dirname'] . DIRECTORY_SEPARATOR . $path_parts['filename'] . '.' . nfoItem::cNFOext;
+
 	}
+
 	// getNFOname
 	public static function getMoviePosterName($sFilePath) {
+
 		$path_parts = pathinfo ( $sFilePath );
-		return $path_parts ['dirname'] . DIRECTORY_SEPARATOR . $path_parts ['filename'] . '-poster.jpg';
+		return $path_parts['dirname'] . DIRECTORY_SEPARATOR . $path_parts['filename'] . '-poster.jpg';
+
 	}
+
 	// getMoviePosterName
 	public static function getEpisodeThumbName($sFilePath) {
+
 		$path_parts = pathinfo ( $sFilePath );
-		return $path_parts ['dirname'] . DIRECTORY_SEPARATOR . $path_parts ['filename'] . '-thumb.jpg';
+		return $path_parts['dirname'] . DIRECTORY_SEPARATOR . $path_parts['filename'] . '-thumb.jpg';
+
 	}
+
 	// getEpisodeThumbName
 	public static function getShowPath($sFilePath) {
+
 		$path_parts = pathinfo ( $sFilePath );
-		return dirname ( $path_parts ['dirname'] );
+		return dirname ( $path_parts['dirname'] );
+
 	}
+
 	// getShowPath
 	public static function getShowNFOname($sFilePath) {
+
 		return nfoItem::getShowPath ( $sFilePath ) . DIRECTORY_SEPARATOR . 'tvshow.nfo';
+
 	}
+
 	// getShowNFOname
 	public static function getShowBannerName($sFilePath) {
+
 		return nfoItem::getShowPath ( $sFilePath ) . DIRECTORY_SEPARATOR . 'banner.jpg';
+
 	}
+
 	// getShowBannerName
 	public static function getShowPosterName($sFilePath) {
+
 		return nfoItem::getShowPath ( $sFilePath ) . DIRECTORY_SEPARATOR . 'poster.jpg';
+
 	}
+
 	// getShowPosterName
 	public static function getCollectionName($sFilePath) {
+
 		$path_parts = pathinfo ( $sFilePath );
-		$path_parts = pathinfo ( $path_parts ['dirname'] );
-		return strtr ( basename ( $path_parts ['dirname'] ), '_', ' ' );
+		$path_parts = pathinfo ( $path_parts['dirname'] );
+		return strtr ( basename ( $path_parts['dirname'] ), '_', ' ' );
+
 	}
+
 	// getCollectionName
 	public static function checkURL($sURL) {
+
 		$headers = get_headers ( $sURL );
-		if (strpos ( $headers [0], '404' ) === false) {
+		if (strpos ( $headers[0], '404' ) === false) {
 			return true;
 		} else {
 			return false;
 		}
 		return false;
+
 	}
+
 	// checkURL
 	public function setDbConnectionString($sConnStr) {
+
 		$this->dbConnStr = $sConnStr;
 		return;
+
 	}
+
 	// setDbConnectionString
 	public function setDbConnection(&$dbConnection) {
+
 		$this->dbConn = $dbConnection;
 		return;
+
 	}
+
 	// setDbConnectionString
 	public function setPathCollectionMask($sMask) {
+
 		$this->sSynoCollectionPathMask = $sMask;
 		return;
+
 	}
+
 	// setPathCollectionMask
 	public function setUserID($iUID) {
+
 		$this->iSynoUserID = $iUID;
 		return;
+
 	}
+
 	// setUserID
 	public function ExportItem($bReplace = false) {
+
 		$bExport = false;
 		$this->synoSelectData ();
 		$this->buildNFOstring ();
 		$bExport = $this->writeNFO ( $bReplace );
 		$this->writePoster ( $bReplace );
 		return $bExport;
+
 	}
+
 	// ExportItem
 	protected function dbConnect() {
+
 		if ($this->dbConn != null) {
 			return;
 		}
@@ -173,9 +229,12 @@ class nfoItem {
 		}
 
 		return;
+
 	}
+
 	// dbConnect
 	protected function dbSelectSingle($sSQLcmd) {
+
 		$dbRs = null;
 		$dbRow = null;
 
@@ -191,9 +250,12 @@ class nfoItem {
 		$dbRow = $dbRs->fetch ( PDO::FETCH_NAMED );
 
 		return $dbRow;
+
 	}
+
 	// dbSelectTable
 	protected function dbSelectTable($sSQLcmd) {
+
 		$dbRs = null;
 		$dbTable = null;
 
@@ -209,13 +271,19 @@ class nfoItem {
 		$dbTable = $dbRs->fetchAll ( PDO::FETCH_NAMED );
 
 		return $dbTable;
+
 	}
+
 	// dbSelectTable
 	protected function dbResultGetValue(&$var, $default = null) {
+
 		return isset ( $var ) ? $var : $default;
+
 	}
+
 	// dbResultGetValue
 	protected function synoSelectData() {
+
 		$sSQLcmd = null;
 		$dbRes = null;
 		$sInfo = null;
@@ -235,11 +303,11 @@ class nfoItem {
 			throw new Exception ( 'Media not found!' );
 		}
 
-		switch ($dbRes ['type']) {
+		switch ($dbRes['type']) {
 			case 'movie' :
 				$this->sItemType = nfoItemType::Movie;
 				$sSQLcmd = <<<EOT
-SELECT main.mapper_id,main.year,main.originally_available,main.library_id,
+SELECT main.mapper_id,main.year,main.sort_time,main.library_id,
        main.title,
        main.sort_title,
        main.tag_line AS tag_line,
@@ -268,15 +336,15 @@ EOT;
 			case 'tvshow' :
 				$this->sItemType = nfoItemType::Show;
 				$sSQLcmd = <<<EOT
-SELECT main.mapper_id,main.year,main.originally_available,main.library_id,
+SELECT main.mapper_id,main.year,main.sort_time,main.library_id,
        main.title,
        main.sort_title,
        '' AS tag_line,
        file.mapper_id AS file_mapper_id,
        main.mapper_id AS show_mapper_id,
        main.title AS show_title,
-       '-1' AS season,
-       ( SELECT count(*) AS episode FROM tvshow_episode WHERE tvshow_id = main.id ) as episode,
+       ( SELECT max(season) AS season FROM tvshow_episode WHERE tvshow_id = main.id ) AS season,
+       ( SELECT count(*) AS episode FROM tvshow_episode WHERE tvshow_id = main.id ) AS episode,
        file.path,
        file.create_date,
        '0' AS duration,
@@ -297,7 +365,7 @@ EOT;
 			case 'tvshow_episode' :
 				$this->sItemType = nfoItemType::Episode;
 				$sSQLcmd = <<<EOT
-SELECT main.mapper_id,main.year,main.originally_available,main.library_id,
+SELECT main.mapper_id,main.year,main.sort_time,main.library_id,
        main.tag_line AS title,
        '' AS sort_title,
        '' AS tag_line,
@@ -336,53 +404,53 @@ EOT;
 			throw new Exception ( 'Media not found!' );
 		}
 
-		$this->sTitle = $this->dbResultGetValue ( $dbRes ['title'] );
-		$this->sSortTitle = $this->dbResultGetValue ( $dbRes ['sort_title'] );
-		$this->sTag = $this->dbResultGetValue ( $dbRes ['tag_line'] );
-		$this->iFileMapperID = $this->dbResultGetValue ( $dbRes ['file_mapper_id'] );
-		$this->iShowMapperID = $this->dbResultGetValue ( $dbRes ['show_mapper_id'] );
-		$this->sShowTitle = $this->dbResultGetValue ( $dbRes ['show_title'] );
-		$this->iYear = $this->dbResultGetValue ( $dbRes ['year'] );
-		$this->iSynoLibraryID = $this->dbResultGetValue ( $dbRes ['library_id'] );
-		$this->iSeason = $this->dbResultGetValue ( $dbRes ['season'] );
-		$this->iEpisode = $this->dbResultGetValue ( $dbRes ['episode'] );
-		$this->iRuntime = round ( $this->dbResultGetValue ( $dbRes ['duration'] ) / 60 );
-		$this->sFilePath = $this->dbResultGetValue ( $dbRes ['path'] );
-		$this->sDirector = $this->dbResultGetValue ( $dbRes ['director'] );
-		$this->sPlot = $this->dbResultGetValue ( $dbRes ['summary'] );
-		$this->iSynoPosterOID = $this->dbResultGetValue ( $dbRes ['lo_oid'] );
-		$this->iPlayCount = $this->dbResultGetValue ( $dbRes ['playcount'] );
+		$this->sTitle = $this->dbResultGetValue ( $dbRes['title'] );
+		$this->sSortTitle = $this->dbResultGetValue ( $dbRes['sort_title'] );
+		$this->sTag = $this->dbResultGetValue ( $dbRes['tag_line'] );
+		$this->iFileMapperID = $this->dbResultGetValue ( $dbRes['file_mapper_id'] );
+		$this->iShowMapperID = $this->dbResultGetValue ( $dbRes['show_mapper_id'] );
+		$this->sShowTitle = $this->dbResultGetValue ( $dbRes['show_title'] );
+		$this->iYear = $this->dbResultGetValue ( $dbRes['year'] );
+		$this->iSynoLibraryID = $this->dbResultGetValue ( $dbRes['library_id'] );
+		$this->iSeason = $this->dbResultGetValue ( $dbRes['season'] );
+		$this->iEpisode = $this->dbResultGetValue ( $dbRes['episode'] );
+		$this->iRuntime = round ( $this->dbResultGetValue ( $dbRes['duration'] ) / 60 );
+		$this->sFilePath = $this->dbResultGetValue ( $dbRes['path'] );
+		$this->sDirector = $this->dbResultGetValue ( $dbRes['director'] );
+		$this->sPlot = $this->dbResultGetValue ( $dbRes['summary'] );
+		$this->iSynoPosterOID = $this->dbResultGetValue ( $dbRes['lo_oid'] );
+		$this->iPlayCount = $this->dbResultGetValue ( $dbRes['playcount'] );
 
-		$dValue = $this->dbResultGetValue ( $dbRes ['originally_available'] );
+		$dValue = $this->dbResultGetValue ( $dbRes['sort_time'] );
 		if ($dValue) {
 			$this->dPremiered = date ( "Y-m-d", strtotime ( $dValue ) );
 		}
-		$dValue = $this->dbResultGetValue ( $dbRes ['create_date'] );
+		$dValue = $this->dbResultGetValue ( $dbRes['create_date'] );
 		if ($dValue) {
 			$this->dDayAdded = date ( 'Y-m-d H:i:s', strtotime ( $dValue ) );
 		}
 
-		$aValue = $this->dbResultGetValue ( $dbRes ['actor'] );
+		$aValue = $this->dbResultGetValue ( $dbRes['actor'] );
 		if ($aValue) {
 			$this->aActor = explode ( '|', $aValue );
 		}
-		$aValue = $this->dbResultGetValue ( $dbRes ['gnere'] );
+		$aValue = $this->dbResultGetValue ( $dbRes['gnere'] );
 		if ($aValue) {
 			$this->aGenre = explode ( '|', $aValue );
 		}
-		$aValue = $this->dbResultGetValue ( $dbRes ['writer'] );
+		$aValue = $this->dbResultGetValue ( $dbRes['writer'] );
 		if ($aValue) {
 			$this->aCredits = explode ( '|', $aValue );
 		}
 
 		/* Extra info */
-		$sInfo = $this->dbResultGetValue ( $dbRes ['plus_info'] );
+		$sInfo = $this->dbResultGetValue ( $dbRes['plus_info'] );
 		if ($sInfo) {
 			// Poster
 			$sPattern = '/\"poster\".\:.\[.\"(.*)\".\]/i';
 			$aMatch = null;
 			if (preg_match ( $sPattern, $sInfo, $aMatch )) {
-				$this->sThumbPoster = $aMatch [1];
+				$this->sThumbPoster = $aMatch[1];
 			}
 
 			if ($this->sItemType == nfoItemType::Movie) {
@@ -390,32 +458,32 @@ EOT;
 				$sPattern = '/\"themoviedb\".\:.([0-9]\.[0-9])/i';
 				$aMatch = null;
 				if (preg_match ( $sPattern, $sInfo, $aMatch )) {
-					$this->fRating = $aMatch [1];
+					$this->fRating = $aMatch[1];
 				}
 				// Reference/ID
 				$sPattern = '/\"themoviedb\".\:.([0-9]{2,})/i';
 				$aMatch = null;
 				if (preg_match ( $sPattern, $sInfo, $aMatch )) {
-					$this->sID = $aMatch [1];
+					$this->sID = $aMatch[1];
 				}
 				// IMDB ID
 				$sPattern = '/\"imdb\".\:.\"(.*)\"/i';
 				$aMatch = null;
 				if (preg_match ( $sPattern, $sInfo, $aMatch )) {
-					$this->sIDimdb = $aMatch [1];
+					$this->sIDimdb = $aMatch[1];
 				}
 			} else {
 				// Rating
 				$sPattern = '/\"thetvdb\".\:.([0-9]\.[0-9])/i';
 				$aMatch = null;
 				if (preg_match ( $sPattern, $sInfo, $aMatch )) {
-					$this->fRating = $aMatch [1];
+					$this->fRating = $aMatch[1];
 				}
 				// Reference/ID
 				$sPattern = '/\"thetvdb\".\:.\"([0-9]+)\"/i';
 				$aMatch = null;
 				if (preg_match ( $sPattern, $sInfo, $aMatch )) {
-					$this->sID = $aMatch [1];
+					$this->sID = $aMatch[1];
 				}
 			}
 		}
@@ -451,9 +519,12 @@ EOT;
 		}
 
 		return true;
+
 	}
+
 	// synoSelectData
 	protected function buildNFOstring() {
+
 		$sRoot = null;
 		$sValue = null;
 		$aAttr = null;
@@ -487,6 +558,8 @@ EOT;
 		$this->xmlAddElement ( 'sorttitle', $this->sSortTitle );
 		$this->xmlAddElement ( 'rating', $this->fRating );
 		$this->xmlAddElement ( 'year', $this->iYear );
+		$this->xmlAddElement ( 'aired', $this->dPremiered );
+		$this->xmlAddElement ( 'premiered', $this->dPremiered );
 		if ($this->sItemType == nfoItemType::Episode || $this->sItemType == nfoItemType::Show) {
 			$this->xmlAddElement ( 'season', $this->iSeason );
 			$this->xmlAddElement ( 'episode', $this->iEpisode );
@@ -557,8 +630,6 @@ EOT;
 			$this->xmlAddElement ( 'director', $this->sDirector );
 		}
 
-		$this->xmlAddElement ( 'premiered', $this->dPremiered );
-
 		if ($this->aActor) {
 			foreach ( $this->aActor as $sValue ) {
 				$this->xmlAddElementBegin ( 'actor' );
@@ -572,9 +643,12 @@ EOT;
 		$this->xmlAddElementEnd ( $sRoot, 0 );
 
 		return true;
+
 	}
+
 	// buildNFOstring
 	protected function writeNFO($bReplace = false) {
+
 		if (! $this->sXMLstring) {
 			throw new Exception ( 'No XML to export!' );
 		}
@@ -592,9 +666,12 @@ EOT;
 		}
 
 		return true;
+
 	}
+
 	// writeNFO
 	protected function writePoster($bReplace = false) {
+
 		$stream = null;
 		$content = null;
 		$sName = null;
@@ -655,9 +732,12 @@ EOT;
 		}
 
 		return true;
+
 	}
+
 	// writePoster
 	private function xmlAddElement($sName, $sValue, $aAttr = null, $iLevel = 1) {
+
 		$sTab = null;
 		$sAttr = '';
 
@@ -678,9 +758,12 @@ EOT;
 		$this->sXMLstring .= "{$sTab}<{$sName}{$sAttr}>{$sValue}</{$sName}>\n";
 
 		return;
+
 	}
+
 	// xmlAddElement
 	private function xmlAddElementBegin($sName, $iLevel = 1) {
+
 		$sTab = null;
 
 		if ($iLevel) {
@@ -690,9 +773,12 @@ EOT;
 		$this->sXMLstring .= "{$sTab}<{$sName}>\n";
 
 		return;
+
 	}
+
 	// xmlAddElementBegin
 	private function xmlAddElementEnd($sName, $iLevel = 1) {
+
 		$sTab = null;
 
 		if ($iLevel) {
@@ -702,39 +788,60 @@ EOT;
 		$this->sXMLstring .= "{$sTab}</{$sName}>\n";
 
 		return;
+
 	}
+
 	// xmlAddElementEnd
 	public static function getLastErrorMessage() {
+
 		$last_error = error_get_last ();
-		if ($last_error && isset ( $last_error ['message'] )) {
-			$errmessage = ' ' . $last_error ['message'];
+		if ($last_error && isset ( $last_error['message'] )) {
+			$errmessage = ' ' . $last_error['message'];
 		} else {
 			$errmessage = '';
 		}
 		return $errmessage;
+
 	}
+
 	// getLastErrorMessage
 	public function getMapperID() {
+
 		return $this->iMapperID;
+
 	}
+
 	// getMapperID
 	public function getShowMapperID() {
+
 		return $this->iShowMapperID;
+
 	}
+
 	// getShowMapperID
 	public function getItemType() {
+
 		return $this->sItemType;
+
 	}
+
 	// getItemType
 	public function getPath() {
+
 		return $this->sFilePath;
+
 	}
+
 	// getPath
 	public function getNfoPath() {
+
 		return $this->sNfoFilePath;
+
 	}
+
 	// getNfoPath
 	public function toString() {
+
 		$sString = '';
 		switch ($this->sItemType) {
 			case nfoItemType::Movie :
@@ -756,5 +863,8 @@ EOT;
 		}
 
 		return $sString;
-	} // toString
+
+	}
+
+	// toString
 } // nfoItem

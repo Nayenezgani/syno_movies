@@ -1,5 +1,7 @@
 <?php
+
 function sync_watched($dWatchedDateFrom = null) {
+
 	$dbConn = null;
 	$dbRs = null;
 	$dbRow = null;
@@ -60,9 +62,9 @@ EOT;
 		// Set not existing watch status
 		foreach ( $aWatched as $aFile ) {
 			$dbRow = null;
-			$sFileName = str_replace ( cKODIsrcPath, cSYNOvolume, $aFile ['fileName'] );
+			$sFileName = str_replace ( cKODIsrcPath, cSYNOvolume, $aFile['fileName'] );
 			$sqlFileName = $dbConn->quote ( $sFileName );
-			$dWatched = $aFile ['lastPlayed'];
+			$dWatched = $aFile['lastPlayed'];
 
 			$sSQLcmd = <<<EOT
 SELECT id AS video_file_id, mapper_id, duration AS position
@@ -77,9 +79,9 @@ EOT;
 			if (! $dbRow) {
 				continue;
 			}
-			$iMapperID = $dbRow ['mapper_id'];
-			$iSynoFileID = $dbRow ['video_file_id'];
-			$iPosition = $dbRow ['position'];
+			$iMapperID = $dbRow['mapper_id'];
+			$iSynoFileID = $dbRow['video_file_id'];
+			$iPosition = $dbRow['position'];
 
 			$sCmdSyno = <<<EOT
 INSERT INTO watch_status (uid, video_file_id, mapper_id, position, create_date, modify_date)
@@ -120,19 +122,35 @@ EOT;
 	}
 
 	return $aResult;
-} // sync_watched
-function notifyKodiSCAN($sPath) {
+
+}
+
+// sync_watched
+function notifyKodiSCAN($aPath) {
+
 	$sResult = '';
+	$url = cKODIurl . "/jsonrpc?request";
+	$param = '';
 
-	if ($sPath) {
-		$urlPath = urlencode ( cKODIsrcPath . $sPath . '/' );
-		$param = ("{\"jsonrpc\":\"2.0\",\"method\":\"VideoLibrary.Scan\",\"params\":{\"directory\":\"{$urlPath}\"},\"id\":1}");
+	if (count ( $aPath ) == 1) {
+		foreach ( $aPath as $sPath ) {
+			$urlPath = urlencode ( cKODIsrcPath . $sPath . '/' );
+			$param = '{ "jsonrpc": "2.0", "method": "VideoLibrary.Scan", "params": { "directory": "' . $urlPath . '"}, "id": "kodi_util_update" }';
+		}
 	} else {
-		$param = ("{\"jsonrpc\":\"2.0\",\"method\":\"VideoLibrary.Scan\",\"id\":1}");
+		$param = '{ "jsonrpc": "2.0", "method": "VideoLibrary.Scan", "id": "kodi_util_update" }';
 	}
-	$url = cKODIurl . "/jsonrpc?request={$param}";
 
-	$result = file_get_contents ( $url );
+	$opts = array (
+			'http' => array (
+					'method' => 'POST',
+					'header' => 'content-type: application/json',
+					'content' => $param
+			)
+	);
+	$context = stream_context_create ( $opts );
+
+	$result = file_get_contents ( $url, false, $context );
 	if (! $result) {
 		$sResult = nfoItem::getLastErrorMessage ();
 		return $sResult;
@@ -141,7 +159,7 @@ function notifyKodiSCAN($sPath) {
 	$sPattern = '/"result":"(.*)"\}/i';
 	$aMatch = null;
 	if (preg_match ( $sPattern, $result, $aMatch )) {
-		if ($aMatch [1] == 'OK') {
+		if ($aMatch[1] == 'OK') {
 			$sResult = 'OK';
 		} else {
 			$sResult = 'Error';
@@ -151,14 +169,26 @@ function notifyKodiSCAN($sPath) {
 	}
 
 	return $sResult;
-} // notifyKodiSCAN
+
+}
+
+// notifyKodiSCAN
 function notifyKodiCLEAN() {
+
 	$sResult = '';
+	$url = cKODIurl . "/jsonrpc";
+	$param = '{ "jsonrpc": "2.0", "method": "VideoLibrary.Clean", "id": "kodi_util_clean" }';
 
-	$param = ("{\"jsonrpc\":\"2.0\",\"method\":\"VideoLibrary.Clean\",\"id\":1}");
-	$url = cKODIurl . "/jsonrpc?request={$param}";
+	$opts = array (
+			'http' => array (
+					'method' => 'POST',
+					'header' => 'content-type: application/json',
+					'content' => $param
+			)
+	);
+	$context = stream_context_create ( $opts );
 
-	$result = file_get_contents ( $url );
+	$result = file_get_contents ( $url, false, $context );
 	if (! $result) {
 		$sResult = nfoItem::getLastErrorMessage ();
 		return $sResult;
@@ -167,7 +197,7 @@ function notifyKodiCLEAN() {
 	$sPattern = '/"result":"(.*)"\}/i';
 	$aMatch = null;
 	if (preg_match ( $sPattern, $result, $aMatch )) {
-		if ($aMatch [1] == 'OK') {
+		if ($aMatch[1] == 'OK') {
 			$sResult = 'OK';
 		} else {
 			$sResult = 'Error';
@@ -177,4 +207,5 @@ function notifyKodiCLEAN() {
 	}
 
 	return $sResult;
+
 } // notifyKodiCLEAN

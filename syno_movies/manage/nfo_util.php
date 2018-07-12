@@ -1,19 +1,18 @@
 <?php
+
 function export_nfo_start($bReplace, $dDateFrom, $bNotify = false, $bClean = false, $sPathFilter = null) {
+
 	$dbConn = null;
 	$dbRs = null;
 	$dbRow = null;
 	$oNFOitem = null;
 	$sCmd = '';
-	$fileName = '';
 	$sWhere = null;
 	$sWhereF = null;
 	$aShow = array ();
 	$sKey = null;
-	$sValue = null;
 	$aNotify = array ();
 	$path_parts = null;
-	$bHeader = false;
 	$aResult = array ();
 	$fType = '';
 
@@ -44,17 +43,16 @@ function export_nfo_start($bReplace, $dDateFrom, $bNotify = false, $bClean = fal
 		$dbConn->setAttribute ( PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION );
 
 		// Get movies
-		$bHeader = false;
 		$sCmd = "SELECT mapper_id,path FROM video_file {$sWhereF}";
 		$dbRs = $dbConn->query ( $sCmd );
 		if ($dbRs) {
 			while ( $dbRow = $dbRs->fetch ( PDO::FETCH_NAMED ) ) {
-				if (! $bReplace && nfoItem::checkNFOexist ( $dbRow ['path'] )) {
+				if (! $bReplace && nfoItem::checkNFOexist ( $dbRow['path'] )) {
 					continue;
 				}
 				try {
 					$oNFOitem = null;
-					$oNFOitem = new nfoItem ( $dbRow ['mapper_id'], $dbConn );
+					$oNFOitem = new nfoItem ( $dbRow['mapper_id'], $dbConn );
 					$oNFOitem->bTestMode = cGlobalDevelMode;
 					$oNFOitem->iSynoUserID = cSYNOuserID;
 					if (cSYNOcollectionMask) {
@@ -71,18 +69,18 @@ function export_nfo_start($bReplace, $dDateFrom, $bNotify = false, $bClean = fal
 						resultAddText ( $aResult, $oNFOitem->getMapperID (), $fType, $oNFOitem->toString () );
 						if ($oNFOitem->getItemType () == nfoItemType::Episode) {
 							$sKey = ( string ) $oNFOitem->getShowMapperID ();
-							$aShow [$sKey] = true;
+							$aShow[$sKey] = true;
 						}
 
 						if ($bNotify) {
 							$path_parts = pathinfo ( $oNFOitem->getPath () );
 							if ($path_parts) {
-								$sKey = $path_parts ['dirname'];
+								$sKey = $path_parts['dirname'];
 							} else {
 								$sKey = null;
 							}
 							if ($sKey) {
-								$aNotify [$sKey] = $sKey;
+								$aNotify[$sKey] = $sKey;
 							}
 						}
 					}
@@ -107,9 +105,9 @@ function export_nfo_start($bReplace, $dDateFrom, $bNotify = false, $bClean = fal
 				throw new Exception ( 'SQL error!' );
 			}
 			while ( $dbRow = $dbRs->fetch ( PDO::FETCH_NAMED ) ) {
-				$sKey = ( string ) $dbRow ['mapper_id'];
+				$sKey = ( string ) $dbRow['mapper_id'];
 				if (! array_key_exists ( $sKey, $aShow )) {
-					$aShow [$sKey] = $bReplace;
+					$aShow[$sKey] = $bReplace;
 				}
 			}
 			$dbRs = null;
@@ -127,12 +125,12 @@ function export_nfo_start($bReplace, $dDateFrom, $bNotify = false, $bClean = fal
 					if ($bNotify) {
 						$path_parts = pathinfo ( $oNFOitem->getNfoPath () );
 						if ($path_parts) {
-							$sKey = $path_parts ['dirname'];
+							$sKey = $path_parts['dirname'];
 						} else {
 							$sKey = null;
 						}
 						if ($sKey) {
-							$aNotify [$sKey] = $sKey;
+							$aNotify[$sKey] = $sKey;
 						}
 					}
 				}
@@ -155,24 +153,11 @@ function export_nfo_start($bReplace, $dDateFrom, $bNotify = false, $bClean = fal
 
 		// Notify KODI
 		if ($bNotify && count ( $aNotify ) > 0) {
-			if (count ( $aNotify ) > 3) {
-				$sResult = notifyKodiSCAN ( null );
-				$sValue = 'ALL';
-				if ($sResult == 'OK') {
-					resultAddText ( $aResult, null, "KODI Notify", "{$sValue} - {$sResult}" );
-				} else {
-					resultAddError ( $aResult, "KODI Notify # {$sValue} - {$sResult}" );
-				}
+			$sResult = notifyKodiSCAN ( $aNotify );
+			if ($sResult == 'OK') {
+				resultAddText ( $aResult, null, "KODI Notify", "{$sResult}" );
 			} else {
-				arsort ( $aNotify );
-				foreach ( $aNotify as $sValue ) {
-					$sResult = notifyKodiSCAN ( $sValue );
-					if ($sResult == 'OK') {
-						resultAddText ( $aResult, null, "KODI Notify", "{$sValue} - {$sResult}" );
-					} else {
-						resultAddError ( $aResult, "KODI Notify # {$sValue} - {$sResult}" );
-					}
-				}
+				resultAddError ( $aResult, "KODI Notify # {$sResult}" );
 			}
 		}
 
@@ -196,4 +181,5 @@ function export_nfo_start($bReplace, $dDateFrom, $bNotify = false, $bClean = fal
 	}
 
 	return $aResult;
+
 } // export_nfo_start
