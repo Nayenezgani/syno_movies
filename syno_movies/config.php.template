@@ -1,15 +1,15 @@
 <?php
-require_once ('../global.php');                                            // Global config
+require_once ('../global.php');                                             // Global config
 define ( 'cMaxThumbWidth', 130 );                                          // Thumb size
 define ( 'cDbConnSYNOstr', 'pgsql:host=127.0.0.1;dbname=video_metadata' ); // Synology Video Station DB connection string
 define ( 'cDbConnSYNOuser', 'postgres' );                                  // Synology DB User
 define ( 'cDbConnSYNOpwd', '' );                                           // Synology DB Password
 define ( 'cSYNOcollectionMask', '/.*collection.*/' );                      // Synology - path mask where movie collections are stored
 define ( 'cSYNOuserID', 1026 );                                            // Synology User ID - need for watch status
-define ( 'cDbConnKODIstr', 'mysql:host=127.0.0.1;dbname=kodi_video107' );  // KODI video DB connection string
+define ( 'cDbConnKODIstr', 'mysql:host=127.0.0.1;dbname=kodi_video113' );  // KODI video DB connection string
 define ( 'cDbConnKODIuser', 'kodi' );                                      // KODI DB User
 define ( 'cDbConnKODIpwd', '' );                                           // KODI DB Password
 define ( 'cKODIsrcPath', '<kodi_src_path_to_synology>' );                  // KODI root path to synology
 define ( 'cKODIurl', 'http://<kodi_url>' );                                // KODI URL
 define ( 'cSYNOvolume', '/volume1/video' );                                // Synology volume path
-define ( 'cSYNOvolumeTest', 'C:\\temp' );                                  // Local test path
+define ( 'cSYNOvolumeTest', cSYNOvolume );                                  // Local test path

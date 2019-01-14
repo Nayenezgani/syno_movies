@@ -163,7 +163,7 @@ EOT;
 function notifyKodiSCAN($aPath) {
 
 	$sResult = '';
-	$url = cKODIurl . "/jsonrpc?request";
+	$url = cKODIurl . "/jsonrpc";
 
 	$oKodiJSON = new KodiJSON ( "VideoLibrary.Scan", "kodi_util_scan" );
 
@@ -177,7 +177,7 @@ function notifyKodiSCAN($aPath) {
 	$opts = array (
 			'http' => array (
 					'method' => 'POST',
-					'header' => 'Content-type: application/json\r\n' . "Content-Length: " . strlen($sKodiJSON) . "\r\n",
+					'header' => "Content-type: application/json\r\n" . "Content-Length: " . strlen($sKodiJSON) . "\r\n",
 					'content' => $sKodiJSON
 			)
 	);
@@ -216,7 +216,7 @@ function notifyKodiCLEAN() {
 	$opts = array (
 			'http' => array (
 					'method' => 'POST',
-					'header' => 'Content-type: application/json\r\n' . "Content-Length: " . strlen($sKodiJSON) . "\r\n",
+					'header' => "Content-type: application/json\r\n" . "Content-Length: " . strlen($sKodiJSON) . "\r\n",
 					'content' => $sKodiJSON
 			)
 	);
