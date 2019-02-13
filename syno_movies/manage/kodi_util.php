@@ -9,7 +9,7 @@ class KodiJSON implements JsonSerializable {
 	public function KodiJSON(string $method, string $id = null) {
 
 		$this->method = $method;
-		if($id) {
+		if ($id) {
 			$this->id = $id;
 		}
 
@@ -28,7 +28,7 @@ class KodiJSON implements JsonSerializable {
 			return ! is_null ( $item );
 		} );
 
-			return $vars;
+		return $vars;
 
 	}
 
@@ -58,6 +58,18 @@ function sync_watched($dWatchedDateFrom = null) {
 		// Connect to KODI
 		$dbConn = new PDO ( cDbConnKODIstr, cDbConnKODIuser, cDbConnKODIpwd ) or die ( 'Could not connect to KODI DB!' );
 		$dbConn->setAttribute ( PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION );
+
+		// Find latest DB version
+		if (cDbConnKODIlsdb) {
+			$dbRs = $dbConn->query ( "SHOW DATABASES LIKE 'kodi_video%';" );
+			if ($dbRs) {
+				$lsDB = $dbRs->fetchAll ( PDO::FETCH_NUM );
+				if ($lsDB) {
+					$currDB = $lsDB[count ( $lsDB ) - 1][0];
+					$dbConn->query ( "USE {$currDB};" );
+				}
+			}
+		}
 
 		// Get watched
 		$sCmdKodi = <<<EOT
@@ -173,11 +185,11 @@ function notifyKodiSCAN($aPath) {
 		];
 	}
 
-	$sKodiJSON = (string)$oKodiJSON;
+	$sKodiJSON = ( string ) $oKodiJSON;
 	$opts = array (
 			'http' => array (
 					'method' => 'POST',
-					'header' => "Content-type: application/json\r\n" . "Content-Length: " . strlen($sKodiJSON) . "\r\n",
+					'header' => "Content-type: application/json\r\n" . "Content-Length: " . strlen ( $sKodiJSON ) . "\r\n",
 					'content' => $sKodiJSON
 			)
 	);
@@ -212,11 +224,11 @@ function notifyKodiCLEAN() {
 	$url = cKODIurl . "/jsonrpc";
 
 	$oKodiJSON = new KodiJSON ( "VideoLibrary.Clean", "kodi_util_clean" );
-	$sKodiJSON = (string)$oKodiJSON;
+	$sKodiJSON = ( string ) $oKodiJSON;
 	$opts = array (
 			'http' => array (
 					'method' => 'POST',
-					'header' => "Content-type: application/json\r\n" . "Content-Length: " . strlen($sKodiJSON) . "\r\n",
+					'header' => "Content-type: application/json\r\n" . "Content-Length: " . strlen ( $sKodiJSON ) . "\r\n",
 					'content' => $sKodiJSON
 			)
 	);
