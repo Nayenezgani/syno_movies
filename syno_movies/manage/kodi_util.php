@@ -61,11 +61,11 @@ function sync_watched($dWatchedDateFrom = null) {
 
 		// Find latest DB version
 		if (cDbConnKODIlsdb) {
-			$dbRs = $dbConn->query ( "SHOW DATABASES LIKE 'kodi_video%';" );
+			$dbRs = $dbConn->query ( "SELECT schema_name FROM information_schema.schemata WHERE schema_name LIKE 'kodi_video%' ORDER BY schema_name DESC LIMIT 1;" );
 			if ($dbRs) {
-				$lsDB = $dbRs->fetchAll ( PDO::FETCH_NUM );
+				$lsDB = $dbRs->fetch ( PDO::FETCH_NUM );
 				if ($lsDB) {
-					$currDB = $lsDB[count ( $lsDB ) - 1][0];
+					$currDB = $lsDB[0];
 					$dbConn->query ( "USE {$currDB};" );
 				}
 			}
