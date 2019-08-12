@@ -1,6 +1,4 @@
-.settings
-.buildpath
 .gitignore
-.project
-syno_movies/global.php
-syno_movies/config.php
+.vscode
+global.php
+config.php

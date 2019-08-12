@@ -1,5 +1,5 @@
 <?php
-require_once ('../global.php');                                            // Global config
+require_once ('global.php');                                               // Global config
 define ( 'cMaxThumbWidth', 130 );                                          // Thumb size
 define ( 'cDbConnSYNOstr', 'pgsql:host=127.0.0.1;dbname=video_metadata' ); // Synology Video Station DB connection string
 define ( 'cDbConnSYNOuser', 'postgres' );                                  // Synology DB User
